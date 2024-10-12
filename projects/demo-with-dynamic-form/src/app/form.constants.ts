@@ -1,44 +1,44 @@
-import { Field, FieldType, KeyValuePair } from '@dynamic-form';
+import { Field, KeyValuePair } from '@dynamic-form';
 import { Validators } from '@angular/forms';
 
 export const leftForm: Field[] = [
       {
         name: 'firstName',
-        type: FieldType.TEXTFIELD,
+        type: 'TEXTFIELD',
         validation: [ Validators.required, Validators.maxLength(25) ]
       },
       {
         name: 'lastName',
-        type: FieldType.TEXTFIELD
+        type: 'TEXTFIELD'
       },
       {
         name: 'favoriteFood',
-        type: FieldType.SELECTDROPDOWN,
+        type: 'SELECTDROPDOWN',
         options: ['Ice Cream', 'Pizza', 'Tacos']
       },
       {
         name: 'favoriteColor',
-        type: FieldType.SELECTDROPDOWN,
+        type: 'SELECTDROPDOWN',
         options: ['Red', 'Blue', 'Yellow']
       }
     ];
 export const rightForm: Field[] = [
       {
         name: 'phone',
-        type: FieldType.TEXTFIELD
+        type: 'TEXTFIELD'
       },
       {
         name: 'email',
-        type: FieldType.TEXTFIELD
+        type: 'TEXTFIELD'
       },
       {
         name: 'favoriteSeason',
-        type: FieldType.SELECTDROPDOWN,
+        type: 'SELECTDROPDOWN',
         options: ['Spring', 'Summer', 'Fall', 'Winter']
       },
       {
         name: 'favoriteMusic',
-        type: FieldType.SELECTDROPDOWN,
+        type: 'SELECTDROPDOWN',
         options: ['Classic', 'Country', 'Folk', 'Rap', 'Rock']
       }
     ];
@@ -46,28 +46,28 @@ export const rightForm: Field[] = [
 export const toggleSet: Field[] = [
   {
     name: 'joinMailingList',
-    type: FieldType.SLIDETOGGLE,
+    type: 'SLIDETOGGLE',
     defaultValue: true,
     children: [
       {
         name: 'streetAddress',
-        type: FieldType.TEXTFIELD
+        type: 'TEXTFIELD'
       },
       {
         name: 'city',
-        type: FieldType.TEXTFIELD
+        type: 'TEXTFIELD'
       },
       {
         name: 'state',
-        type: FieldType.TEXTFIELD
+        type: 'TEXTFIELD'
       },
       {
         name: 'zip',
-        type: FieldType.TEXTFIELD
+        type: 'TEXTFIELD'
       },
       {
         name: 'date',
-        type: FieldType.DATEPICKER
+        type: 'DATEPICKER'
       }
     ]
   }

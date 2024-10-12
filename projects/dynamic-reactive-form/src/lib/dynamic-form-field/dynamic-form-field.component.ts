@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, ReactiveFormsModule } from '@angular/forms';
-import { Field, FieldType } from '../models/dynamic-reactive-form.model';
+import { Field } from '../models/dynamic-reactive-form.model';
 import { SentenceCasePipe } from '../sentence-case.pipe';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,7 +31,6 @@ import { MatListModule } from '@angular/material/list';
 export class DynamicFormFieldComponent implements OnInit {
   @Input() field: Field;
   public control: UntypedFormControl;
-  public FieldType = FieldType;
   constructor(private formGroupDir: FormGroupDirective) { }
 
   ngOnInit(): void {

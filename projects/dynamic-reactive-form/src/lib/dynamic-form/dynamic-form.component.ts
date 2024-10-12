@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { Field, KeyValuePair } from '../models/dynamic-reactive-form.model';
+import { Field, KeyValuePair, isControlField } from '../models/dynamic-reactive-form.model';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgxErrorsModule } from '@ngspot/ngx-errors';
 import { DynamicFormFieldComponent } from '../dynamic-form-field/dynamic-form-field.component';
@@ -60,18 +60,18 @@ export class DynamicFormComponent implements OnInit {
     /**
      * Iterate through fields for each section
      */
-    this.fieldset.forEach(field => {
+    this.fieldset.forEach((field, fieldParentIndex) => {
       /**
        * Create each form field and add it to the Form Group
        */
-      this.form.addControl(field.name, this.initializeFormControl(field));
+      this.form.addControl(field.name, this.initializeFormControl(field, fieldParentIndex));
 
       /**
        * Add Slide Toggle child fields if needed
        */
-      if (field.children) {
-        field.children.forEach(child => {
-          this.form.addControl(child.name, this.initializeFormControl(child));
+      if (field.type === 'SLIDETOGGLE' && field.children.length > 0) {
+        field.children.forEach((child, childParentIndex) => {
+          this.form.addControl(child.name, this.initializeFormControl(child, childParentIndex));
         });
         this.togglesWithChildren.push(
           { name: field.name, value: field.defaultValue, children: field.children });
@@ -97,13 +97,13 @@ export class DynamicFormComponent implements OnInit {
     this.formReady = true;
   }
 
-  initializeFormControl(field): UntypedFormControl {
+  initializeFormControl(field: Field, parentIndex: number): UntypedFormControl {
     let value;
 
     /**
      * Populate defaultValues from constants if assigned
      */
-    if (typeof field.defaultValue !== 'undefined') {
+    if (isControlField(field) && typeof field.defaultValue !== 'undefined') {
       value = field.defaultValue;
     }
 
@@ -111,14 +111,14 @@ export class DynamicFormComponent implements OnInit {
      * Default Slide Toggles to true unless otherwise specified,
      * push specific false toggles to falseToggles array
      */
-    if (field.type === 5) {
+    if (field.type === 'SLIDETOGGLE') {
 
       if (typeof value === 'undefined') {
         value = true;
       }
 
       if (field.defaultValue === false) {
-        this.hideChildren(field);
+        this.hideChildren(parentIndex);
       }
     }
 
@@ -136,8 +136,8 @@ export class DynamicFormComponent implements OnInit {
      * Handle validation (or initialize null), disabled fields, and visibility
      * (passing in readOnly = true will disabled ALL fields)
      */
-    const validation = field.validation ? field.validation : [];
-    const isDisabled = field.disabled || this.readOnly ? true : false;
+    const validation = isControlField(field) && field.validation ? field.validation : [];
+    const isDisabled = isControlField(field) && field.disabled || this.readOnly ? true : false;
     /**
      * That's it, we're done! Return our new Form Control up to the form.
      */
@@ -168,7 +168,7 @@ export class DynamicFormComponent implements OnInit {
   hideChildren(parentIndex: number): void {
     const parent = { ...this.fieldset[parentIndex] };
 
-    if (!parent.children) {
+    if (parent.type !== 'SLIDETOGGLE') {
       return;
     }
 
@@ -178,10 +178,10 @@ export class DynamicFormComponent implements OnInit {
     }
   }
 
-  showChildren(parentIndex): void {
+  showChildren(parentIndex: number): void {
     const parent = { ...this.fieldset[parentIndex] };
 
-    if (!parent.children) {
+    if (parent.type !== 'SLIDETOGGLE') {
       return;
     }
 
