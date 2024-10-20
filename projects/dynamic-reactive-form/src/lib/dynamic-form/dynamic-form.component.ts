@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { Field, KeyValuePair } from '../models/dynamic-reactive-form.model';
+import { Field, FieldType, KeyValuePair } from '../models/dynamic-reactive-form.model';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgxErrorsModule } from '@ngspot/ngx-errors';
 import { DynamicFormFieldComponent } from '../dynamic-form-field/dynamic-form-field.component';
@@ -111,7 +111,7 @@ export class DynamicFormComponent implements OnInit {
      * Default Slide Toggles to true unless otherwise specified,
      * push specific false toggles to falseToggles array
      */
-    if (field.type === 5) {
+    if (field.type === FieldType.SLIDETOGGLE) {
 
       if (typeof value === 'undefined') {
         value = true;
