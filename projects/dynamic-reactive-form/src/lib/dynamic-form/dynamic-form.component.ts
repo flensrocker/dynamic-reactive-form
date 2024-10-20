@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Field, FieldType, KeyValuePair } from '../models/dynamic-reactive-form.model';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgxErrorsModule } from '@ngspot/ngx-errors';
@@ -11,6 +12,7 @@ import { DynamicFormFieldComponent } from '../dynamic-form-field/dynamic-form-fi
   styleUrls: ['./dynamic-form.component.css']
 })
 export class DynamicFormComponent implements OnInit {
+  readonly #destroyRef = inject(DestroyRef);
 
   protected readonly formBuilder = inject(UntypedFormBuilder);
 
@@ -152,9 +154,11 @@ export class DynamicFormComponent implements OnInit {
      * Set up valueChanges subscription for each Slide Toggle field w/ children
      */
     this.togglesWithChildren.forEach(parent => {
-      this.form.controls[parent.name].valueChanges.subscribe(value => {
-        this.toggleChildren(parent.name, value);
-      });
+      this.form.controls[parent.name].valueChanges
+        .pipe(takeUntilDestroyed(this.#destroyRef))
+        .subscribe(value => {
+          this.toggleChildren(parent.name, value);
+        });
     });
   }
 
