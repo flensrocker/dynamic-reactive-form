@@ -60,18 +60,18 @@ export class DynamicFormComponent implements OnInit {
     /**
      * Iterate through fields for each section
      */
-    this.fieldset.forEach(field => {
+    this.fieldset.forEach((field, fieldIndex) => {
       /**
        * Create each form field and add it to the Form Group
        */
-      this.form.addControl(field.name, this.initializeFormControl(field));
+      this.form.addControl(field.name, this.initializeFormControl(field, fieldIndex));
 
       /**
        * Add Slide Toggle child fields if needed
        */
       if (field.children) {
         field.children.forEach(child => {
-          this.form.addControl(child.name, this.initializeFormControl(child));
+          this.form.addControl(child.name, this.initializeFormControl(child, -1));
         });
         this.togglesWithChildren.push(
           { name: field.name, value: field.defaultValue, children: field.children });
@@ -97,7 +97,7 @@ export class DynamicFormComponent implements OnInit {
     this.formReady = true;
   }
 
-  initializeFormControl(field): UntypedFormControl {
+  initializeFormControl(field: Field, parentIndex: number): UntypedFormControl {
     let value;
 
     /**
@@ -112,13 +112,16 @@ export class DynamicFormComponent implements OnInit {
      * push specific false toggles to falseToggles array
      */
     if (field.type === FieldType.SLIDETOGGLE) {
+      if (parentIndex < 0) {
+        throw new Error('Nested slide toggles are not supported');
+      }
 
       if (typeof value === 'undefined') {
         value = true;
       }
 
       if (field.defaultValue === false) {
-        this.hideChildren(field);
+        this.hideChildren(parentIndex);
       }
     }
 
@@ -155,7 +158,7 @@ export class DynamicFormComponent implements OnInit {
     });
   }
 
-  toggleChildren(name, toggleValue): void {
+  toggleChildren(name: string, toggleValue: boolean): void {
     const parentIndex = this.fieldset.findIndex(field => field.name === name);
 
     if (toggleValue) {
@@ -178,7 +181,7 @@ export class DynamicFormComponent implements OnInit {
     }
   }
 
-  showChildren(parentIndex): void {
+  showChildren(parentIndex: number): void {
     const parent = { ...this.fieldset[parentIndex] };
 
     if (!parent.children) {
